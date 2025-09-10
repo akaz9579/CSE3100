@@ -24,14 +24,7 @@ int main()
 	//add code below 
 	double sum = 0.0;
 
-/*
-	double den = 1.0;
-		for(int j=1;j <=i;j++){
-			den*=16.0;
-		};
-		double frac = 1/den;
 
-*/
 	for(i=0;i<=n;i++){
 
 		double frac = 1.0/power(16.0,i);
