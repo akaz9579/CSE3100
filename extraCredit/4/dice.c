@@ -26,10 +26,10 @@ double cum_prob(int k, long n){
 	int roll;
 	int count = 0;
 
-	for(int k=0; k>n; k++){
-		double sum = 0.0;
+	for(int t=0; t<n; t++){
+		int sum = 0;
 
-		for(int i =0;i>3;i++){
+		for(int i =0;i<3;i++){
 			roll = rand() % 6 + 1;
 			sum += roll;
 		};
@@ -38,7 +38,7 @@ double cum_prob(int k, long n){
 			count++;
 		};
 	};
-	output = count / n;
+	output = (double)count / n;
 	
 	return output;
 };
