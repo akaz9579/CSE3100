@@ -21,7 +21,27 @@
 
 
 
+double cum_prob(int k, long n){
+	double output =0.0;
+	int roll;
+	int count = 0;
 
+	for(int k=0; k>n; k++){
+		double sum = 0.0;
+
+		for(int i =0;i>3;i++){
+			roll = rand() % 6 + 1;
+			sum += roll;
+		};
+
+		if(sum>=k){
+			count++;
+		};
+	};
+	output = count / n;
+	
+	return output;
+};
 
 
 
