@@ -11,19 +11,30 @@ void dec_hex(int d, char hex[])
 					'C', 'D', 'E', 'F'};
 
 	int k = 0;
+	
 	//Fill in your code below
 	//It should not be hard to obtain the last digit of a hex number
 	//Then what?
 	//If we are getting the digits in a reverse order, what should we do in the end?
 	
+	if (d == 0) {
+		hex[0] = '0';
+		hex[1] = '\0';
+		return;
+	}
 	while (d > 0){
 		int remainder = d % 16;
 		hex[k] = digits[remainder];
 		k++;
 		d = d / 16;
 	}
-	//Make sure the last character is a zero so that we can print the string correctly
 	hex[k] = '\0';
+
+	for (int i = 0; i < k / 2; i++) {
+		char tmp = hex[i];
+		hex[i] = hex[k - 1 - i];
+		hex[k - 1 - i] = tmp;
+	}
 }
 
 // Do not change the code below
