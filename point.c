@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+//lalala
 int main(){
     int x = 21;
     int *P = &x;
