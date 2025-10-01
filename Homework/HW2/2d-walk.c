@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int visited[129][129];
 double two_d_random(int n)
 {
 
@@ -12,41 +12,47 @@ double two_d_random(int n)
 
 	//The random walk should stop once the x coordinate or y coordinate reaches $-n$ or $n$. 
 	//The function should return the fraction of the visited $(x, y)$ coordinates inside (not including) the square.
+    int array[2*n+1][2*n+1];
 
-	
-
-    int x = 0, y = 0;
-    int visited_count = 0;
-    int total_points = (2 * n - 1) * (2 * n - 1);
-
-    for (int i = 0; i < 129; i++) {
-        for (int j = 0; j < 129; j++) {
-            visited[i][j] = 0;
-        }
+    for(int i=0;i<2*n+1;i++){
+        for(int j=0;j<2*n+1;j++){
+            array[i][j] = 0;
     }
+    } 
+    double out= 0.0;
+    int x = n; //-   0    n ==  0    n   2n 
+    int y= n;
+    array[n][n] = 1;
+    int tiles = 1;
+    int area = (2*n-1)*(2*n-1); 
 
-    visited[n][n] = 1;
-    visited_count++;
 
-    while (x > -n && x < n && y > -n && y < n) {
+    while (x > 0 && x < 2*n && y > 0 && y < 2*n){
         int r = rand() % 4;
-        if (r == 0) y += 1;      
-        else if (r == 1) x += 1;  
-        else if (r == 2) y -= 1;  
-        else if (r == 3) x -= 1;  
-
-        int array_x = x + n;
-        int array_y = y + n;
-
-        if (!visited[array_x][array_y] && x > -n && x < n && y > -n && y < n) {
-            visited[array_x][array_y] = 1;
-            visited_count++;
+        switch(r){
+            case 0://up
+            y++;
+            break;
+            case 1://right 
+            x++;
+            break;
+            case 2: // down
+            y--;
+            break;
+            case 3: //left 
+            x--;
+            break;
         }
+        if (array[x][y]==0 && (x > 0 && x < 2*n && y > 0 && y < 2*n)){
+            array[x][y]=1;
+            tiles ++;
+        }
+        
+        
     }
-
-    return (double)visited_count / total_points;
-
 	
+    out = (double)tiles/area;
+    return out;
 }
 
 //Do not change the code below
