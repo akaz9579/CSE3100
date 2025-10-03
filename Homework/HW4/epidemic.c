@@ -1,6 +1,8 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 enum TYPE {S, I, R};
 
@@ -9,7 +11,7 @@ enum TYPE {S, I, R};
 //this integer should be unique for every x, y pair in your grid
 int idx(int x, int y, int k)
 {
-
+  return (x + k) * (2 * k + 1) + (y + k);
 }
 
 typedef struct Host
@@ -30,15 +32,20 @@ typedef struct node_tag {
 //return a pointer to the created node
 node * create_node(THost host) 
 {
-
+node *new = malloc(sizeof(node));
+new->host = host;
+new->next = NULL;
+return new;
 }
+
 
 //add_first() should add to the beginning of a linked list
 //note the type: 'node **head'
 //note that it does not return a value 
 void add_first(node **head, node *newnode)
 {
-
+	newnode->next = *head;
+	*head = newnode;
 }
 
 
@@ -47,14 +54,26 @@ void add_first(node **head, node *newnode)
 //return a pointer to the removed content
 node * remove_first(node **head) 
 {
+	if (*head==NULL){
+		return NULL;
+	}
+	node *old = *head;
+ 	*head= (*head)->next;
 
+
+return old;
 }
 
 //remove all the nodes in the list
 //and free all the allocated memory
 void remove_all(node **head)
 {
-
+	node *curr;
+	while(*head !=NULL){
+		curr = *head;
+		*head = (*head)->next;
+		free(curr);
+	}
 }
 
 //location_match checks whether a linked list contains
@@ -62,7 +81,14 @@ void remove_all(node **head)
 //return 1 if there is a match, 0 if not
 int location_match(node *head, THost host)
 {
-
+	while(head!=NULL){
+		if(head->host.x==host.x &&head->host.y==host.y ){
+			return 1;
+		}else{
+			head = head->next;
+		}
+	}
+	return 0;
 }
 
 
@@ -111,17 +137,28 @@ int one_round(THost *hosts, int m, node *p_arr[], int n_arr, int k, int T)
             if(location_match(p_arr[index], hosts[i]))
             {
             	//TODO: fill in what should happen here (not long)
+				hosts[i].type = I;
+				hosts[i].t = 0;
+				
 			}
         }
 		else if(hosts[i].type == I)
         {
            	//TODO: fill in what should happen here (not long)
+			hosts[i].t++;
+			if (hosts[i].t == T){
+				hosts[i].type = R;
+			}
+			
         }
     }
 
 	//TODO: fill in code below
     //reset all linked lists
-
+	for (int i = 0; i < n_arr; i++) {
+		remove_all(&p_arr[i]);
+		p_arr[i] = NULL;
+	}
 
 
 	for(int i = 0; i < m; i++)
@@ -132,10 +169,22 @@ int one_round(THost *hosts, int m, node *p_arr[], int n_arr, int k, int T)
 		//TODO: update locations for all hosts
 		switch(r)
 		{
-			case 0: hosts[i].y = 
-			case 1: hosts[i].x =
-			case 2: hosts[i].y =
-			case 3: hosts[i].x =
+			case 0: // up
+				hosts[i].y += 1;
+				if (hosts[i].y > k) hosts[i].y = -k;
+				break;
+			case 1: // right
+				hosts[i].x += 1;
+				if (hosts[i].x > k) hosts[i].x = -k;
+				break;
+			case 2: // down
+				hosts[i].y -= 1;
+				if (hosts[i].y < -k) hosts[i].y = k;
+				break;
+			case 3: // left
+				hosts[i].x -= 1;
+				if (hosts[i].x < -k) hosts[i].x = k;
+				break;
 		}
 
 		//buid linked list for I hosts
