@@ -5,10 +5,6 @@
 
 #include "linkedlist-2.h"
 
-typedef  struct nodetag {
-  int v;
-  struct nodetag *next;
-}node ;
 
 
 void error_message(enum ErrorNumber errno) {
