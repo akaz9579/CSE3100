@@ -5,7 +5,10 @@
 #include <ctype.h>      // isalpha, isdigit, tolower, etc.
 
 
+
 int main(){
-    char *words[3] = {"hi", "bye", "ok"};
-    printf("%s %s\n", words[0], *(words+2));
+  
+
+  return 0;
 }
+
