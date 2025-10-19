@@ -43,10 +43,27 @@ void read_file_to_array(char *filename)
 //Efficiency is needed to pass test cases in limited time
 int in_dict(char *word)
 {
-    
+  //brute force O(n) hell naw
+  //turn into hashset o(1) look up 
+  //FILE *fp = fopen("dict.txt","r");
+  
+    int left = 0;
+    int right = word_count - 1;
 
-
-
+    while(left<=right){
+        int mid = (left+ right) / 2;
+        int cmp = strcasecmp(word, words[mid]);
+        if(cmp == 0){
+            return 1; 
+        }     
+        else if(cmp < 0){
+            right = mid - 1;
+        }
+        else{
+            left = mid + 1;
+        }
+    }
+    return 0;
 
 }
 
@@ -58,10 +75,13 @@ int in_dict(char *word)
 
 void decryption(unsigned char key, unsigned char shift, const int *encrypted, int len, char *decrypted)
 {
-
-
-
-
+    for(int i = 0; i < len; i++){
+        int varInt = encrypted[i] ^ key;
+        varInt = varInt >> shift;
+        decrypted[i] = (char)varInt;
+    }
+    decrypted[len] = '\0';
+    
 }
 
 //TODO
@@ -69,14 +89,27 @@ void decryption(unsigned char key, unsigned char shift, const int *encrypted, in
 //the score is used to determine whether msg is the original message
 int message_score(const char *msg)
 {
+    char check[MAX];
+    strncpy(check, msg, MAX);
+    check[MAX - 1] = '\0';
 
+    int score = 0;
 
+    char *nonChar = " \t\r\n.,;:!?()\"'";
+    char *token = strtok(check, nonChar);
 
+    while(token != NULL){
+        for(char *p = token; *p; p++){
+            *p = tolower((unsigned char)*p);
+        }
+        
+        if(in_dict(token)){
+            score++;
+        }
+        token = strtok(NULL, nonChar);
+    }
 
-
-
-
-
+    return score;
 }
 
 //search using all the (key, shift) combinations
@@ -108,12 +141,19 @@ void search(const int *encrypted, int len, char *message)
 //return number of bytes read
 int read_encrypted(char *filename, int *encrypted)
 {
+    int fd = open(filename, O_RDONLY);
+    
+    if(fd < 0){
+        printf("can't open file %s\n", filename);
+        exit(-1);
+    }
 
-
-
-
-
-
+   //cconv from byte to char 
+    int len = read(fd, encrypted, MAX * sizeof(int));
+    close(fd);
+    len = len / sizeof(int);
+    
+    return len;
 }
 
 //Do not change the main() function
