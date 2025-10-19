@@ -104,12 +104,15 @@ void guess_my_number(int seed)
 //
 // This function should not return.
 // This function does not print any characters, except for error messages.
-void    child_main(int fdp[], int fdc[], int seed)
+void child_main(int fdp[], int fdc[], int seed)
 {
     gmn_t   gmn;
 
     gmn_init(&gmn, seed);
 
+
+    // fdp : parent writes
+    // fdc : child writes
     // TODO
     //  close unused file descriptors
     //  send max value to the parent 
@@ -119,6 +122,24 @@ void    child_main(int fdp[], int fdc[], int seed)
     //      send the result to parent
     //  send the final message back (as a string) 
     //  close all pipe file descriptors
+
+    close(fdp[1]);
+    close(fdc[0]);
+    int max = gmn_get_max();
+    write(fdc[1],&max,sizeof(int));
+    int guess;
+    int result;
+    do{
+        read(fdp[0],&guess,sizeof(guess));
+        result = gmn_check(&gmn,guess);
+        write(fdc[1],&result,sizeof(result));
+    }while(result !=0);
+
+
+    write(fdc[1],gmn.message,MSG_BUF_SIZE);
+
+    close(fdp[0]);
+    close(fdc[1]);
 
     exit(EXIT_SUCCESS);
 }
@@ -187,14 +208,16 @@ int main(int argc, char *argv[])
     // TODO
     //      close unused pipe file descriptor
     //      get max from the child
+    close(fdc[1]);
+    close(fdp[0]);
+    read(fdc[0],&max,sizeof(int));
     
     do { 
         guess = (min + max)/2;
         printf("My guess: %d\n", guess);
-
         // TODO
-        //     send guess to the child
-        //     wait for the result from the child
+        write(fdp[1],&guess,sizeof(guess)); //     send guess to the child
+        read(fdc[0],&result,sizeof(result));//     wait for the result from the child
 
         if (result > 0)
             min = guess + 1;
@@ -209,6 +232,11 @@ int main(int argc, char *argv[])
     //      receive the final message and print it to stdout
     //      close all pipe file descriptors
     //wait for the child process to finish
+    char str[MSG_BUF_SIZE];
+    read(fdc[0],&str,sizeof(str));
+    close(fdp[1]);
+    close(fdc[0]);
+    printf("%s",str);
     wait(NULL);
     return 0;
 }

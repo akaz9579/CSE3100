@@ -6,19 +6,10 @@
 
 int main(int argc, char *argv[]){
 
-    /*FD 
-    0, in 
-    1, out 
-    2, err
-    3 pip1 write
-    4 pip1 read
-    5 pip2 wrie
-    6 pip2 read
-    */ 
-
-    int pd[2];
-    int pd2[2];
+    int pd[2]; 
     pipe(pd); // hello
+    
+    int pd2[2];
     pipe(pd2); //hi 
 
     pid_t pid = fork();
