@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
         close(pd[0]);
         write(pd[1], "Hello", 6);
         
-
+        
         //pipe 2 operation, child to parent
         close(pd2[1]);
         char recive[10];

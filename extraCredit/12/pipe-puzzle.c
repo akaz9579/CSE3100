@@ -6,8 +6,7 @@
 //A walker walks along the index of this array.
 //He starts at the index 0, where a[0] is 3, which indicates that
 //the walker can move 3 steps. If the walker move to the left, he would be at index
-//-3, which is out of the range. Hence, he can only move to the right, after he makes the move,
-// //he will be at index 3. Since a[3] = 1, he can move to the left or right by one move.
+//-3, which is out of the range. Hence, he can only move to the right, after he makes the move,//he will be at index 3. Since a[3] = 1, he can move to the left or right by one move.
 
 //Note whenever he makes his move, he should be in the range [0, 9]. He is not allowd to move 
 //outside of this range.
@@ -39,7 +38,7 @@ void write_solution(int b[], int moves, int pd)
     }
     strcat(buffer, "\n");
     //Add one line of code to write the buffer to the pipe pd
-    write(pd,buffer,MAX_LINE);
+    write(pd,buffer,strlen(buffer));
 
 }
 
@@ -79,6 +78,7 @@ int main(int argc, char *argv[])
     int b[10];    
     int cur = 0;
     int moves = 0;
+
     int n = 10;
 
     int pd[2];
@@ -112,21 +112,10 @@ int main(int argc, char *argv[])
                 else if(cur + a[cur] >= 0 && cur + a[cur] <n)
                 {
                     //Add your code here
-                    pid_t gcid = fork();
-                    if (gcid == 0) {
-                        cur = a[cur] + cur;
-                        b[moves] = cur;
-                        moves++;
-                        if (a[cur] == 0) {
-                            b[moves - 1] = cur;
-                            write_solution(b, moves, pd[1]);
-                            close(pd[1]);
-                            exit(0);
-                        }
-                        exit(0);
-                    } else {
-                        waitpid(gcid, NULL, 0);
-                    }
+                    cur = a[cur] + cur;
+                    b[moves] = cur;
+                    moves++;
+
                 }
             }
             else
@@ -139,28 +128,18 @@ int main(int argc, char *argv[])
                 {
                     b[moves - 1] = cur;
                     write_solution(b, moves, pd[1]);
-                    //It is crucial to close pd[1] here
+                    
                     close(pd[1]);
                     return 0;
+                
+                  
                 }
                 else if(cur - a[cur] >= 0 && cur - a[cur] <n)
                 {
                     //Add your code here
-                    pid_t gcid2 = fork();
-                    if (gcid2 == 0) {
-                        cur -= a[cur];
-                        b[moves] = cur;
-                        moves++;
-                        if (a[cur] == 0) {
-                            b[moves - 1] = cur;
-                            write_solution(b, moves, pd[1]);
-                            close(pd[1]);
-                            exit(0);
-                        }
-                        exit(0);
-                    } else {
-                        waitpid(gcid2, NULL, 0);
-                    }
+                    cur -= a[cur];
+                    b[moves] = cur;
+                    moves++;
                 }
             }
         }
@@ -188,7 +167,6 @@ int main(int argc, char *argv[])
     {
         strcpy(results[count++], buffer);
     }
-
     printf("Found solutions %d times.\n", count);    
     //Next we find the shortest solution
     int min_len = strlen(results[0]);

@@ -71,7 +71,59 @@ void start_program(Program *programs, int num_programs, int cur)
 {
     // TODO
 
-    Program prog; 
+    //Program *prog = &programs[cur];
+
+    int fd[2];
+    
+    if(cur < num_programs -1){
+        if( pipe(fd) == -1){
+            die("pipe() failed");
+        }
+        programs[cur].fd_out = fd[PIPEFD_WRITE];
+        programs[cur+1].fd_in = fd[PIPEFD_READ];
+    }
+    
+    pid_t child = fork();
+
+    if (child == 0) { // child 
+
+        if (programs[cur].fd_in != -1) {
+            dup2(programs[cur].fd_in, FD_STDIN);
+            close(programs[cur].fd_in);
+        }
+
+        if (programs[cur].fd_out != -1) {
+            dup2(programs[cur].fd_out, FD_STDOUT);
+            close(programs[cur].fd_out);
+        }
+
+        /*if this is not the last program, the child writing to the pipe
+           must close the read end so it doesn't keep the pipe open. */
+        if (cur < num_programs - 1 && programs[cur + 1].fd_in != -1) {
+            close(programs[cur + 1].fd_in);
+        }
+
+        execvp(programs[cur].argv[0], programs[cur].argv);
+        die("exec error");
+    } else if (child > 0) { // parent
+
+        programs[cur].pid = child;
+
+        /* parent no longer needs the current stage's input or output FDs */
+        if (programs[cur].fd_in != -1) {
+            close(programs[cur].fd_in);
+            programs[cur].fd_in = -1;
+        }
+        if (programs[cur].fd_out != -1) {
+            close(programs[cur].fd_out);
+            programs[cur].fd_out = -1;
+        }
+
+        /* Do NOT close programs[cur + 1].fd_in here; the next child will need it. */
+
+    } else { // error
+        die("fork Failed");
+    }
 }
 
 /* Wait on a program. 
@@ -93,6 +145,7 @@ int wait_on_program(Program *prog)
         return -1;
 
     // TODO
+    waitpid(prog->pid, &exitStatus,0);
     return WEXITSTATUS(exitStatus);
 }
 
@@ -113,7 +166,8 @@ int wait_on_program(Program *prog)
  */
 void prepare_pipes(Program *programs, int num_programs)
 {
-    // TODO
+   
+
 }
 
 /*********************************************************/
